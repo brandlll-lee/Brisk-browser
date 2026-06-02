@@ -44,7 +44,7 @@ export async function runDoctor(options: DoctorOptions): Promise<void> {
 
   // ─── Node version ─────────────────────────────────────
   const nodeVersion = process.versions.node;
-  const major = parseInt(nodeVersion.split('.')[0]!, 10);
+  const major = parseInt(nodeVersion.split('.')[0] ?? '', 10);
   if (Number.isNaN(major) || major < MIN_NODE_MAJOR) {
     println(`  node       ✗ ${nodeVersion} (need ${MIN_NODE_MAJOR}+ )`);
     healthy = false;
@@ -114,7 +114,7 @@ export async function runDoctor(options: DoctorOptions): Promise<void> {
     const endpoint = await discoverCdpEndpoint({
       ...(options.cdpWs ? { wsUrl: options.cdpWs } : {}),
       ...(options.cdpUrl ? { httpUrl: options.cdpUrl } : {}),
-      ...(options.cdpPort ? { port: options.cdpPort } : {}),
+      ...(options.cdpPort ? { port: options.cdpPort, profileDirs: [] } : {}),
     });
     println(`  cdp        ✓ ${endpoint.webSocketDebuggerUrl}`);
   } catch (cause) {

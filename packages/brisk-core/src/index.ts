@@ -10,7 +10,7 @@
  * direct in-process API, a CLI script, or the embedded Chromium build.
  */
 
-export const BRISK_CORE_VERSION = '0.1.0-dev' as const;
+export const BRISK_CORE_VERSION = '0.1.0' as const;
 
 export * from './cdp/index.js';
 export * from './console/index.js';

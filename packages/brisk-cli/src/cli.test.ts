@@ -32,7 +32,7 @@ describe('brisk cli', () => {
   it('--version prints the version', () => {
     const { stdout, code } = brisk(['--version']);
     expect(code).toBe(0);
-    expect(stdout).toContain('0.1.0-dev');
+    expect(stdout).toContain('0.1.0');
   });
 
   it('--help advertises every top-level command', () => {
@@ -51,6 +51,12 @@ describe('brisk cli', () => {
     expect(stdout).toContain('--user-data-dir');
     expect(stdout).toContain('--headless');
     expect(stdout).toContain('--dry-run');
+  });
+
+  it('serve --help advertises remote binding guard', () => {
+    const { stdout, code } = brisk(['serve', '--help']);
+    expect(code).toBe(0);
+    expect(stdout).toContain('--allow-remote');
   });
 
   it('daemon --help advertises start / stop / status', () => {

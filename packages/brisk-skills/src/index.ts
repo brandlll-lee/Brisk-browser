@@ -9,7 +9,7 @@
  * Public entry point: `SkillsManager`.
  */
 
-export const BRISK_SKILLS_VERSION = '0.1.0-dev' as const;
+export const BRISK_SKILLS_VERSION = '0.1.0' as const;
 
 export { FailureLog, type RecordInput } from './failures.js';
 export {

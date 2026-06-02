@@ -85,9 +85,10 @@ describe.skipIf(!CHROME_AVAILABLE)('brisk e2e against real Chrome', () => {
   let booted: Boot;
 
   beforeAll(async () => {
+    if (!CHROME_BIN) throw new Error('Chrome not found');
     profileDir = mkdtempSync(resolve(tmpdir(), 'brisk-e2e-'));
     chrome = spawn(
-      CHROME_BIN!,
+      CHROME_BIN,
       [
         `--remote-debugging-port=${TEST_PORT}`,
         `--user-data-dir=${profileDir}`,

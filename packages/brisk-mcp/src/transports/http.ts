@@ -14,9 +14,8 @@
  * default Brisk mode. For multi-tenant deployments, pass
  * `sessionIdGenerator: undefined` to get a fresh server per request.
  *
- * SECURITY: by default we enforce Origin allow-list (Brisk doesn't
- * accept cross-origin requests). Pass `allowedOrigins: ['*']` to
- * disable, but only when you know the listener is bound to loopback.
+ * SECURITY: by default we enforce an exact Origin allow-list. Requests
+ * without Origin are allowed so local non-browser MCP clients still work.
  */
 
 import { randomUUID } from 'node:crypto';
@@ -34,9 +33,9 @@ export interface HttpServerOptions {
   /** Helpers' + skills' execution context (shared across all sessions). */
   readonly ctx: BriskToolContext;
   /**
-   * Origin allow-list. Defaults to `['http://localhost', 'http://127.0.0.1', 'http://[::1]', 'null']`.
-   * Any request whose `Origin` header (lowercased, port stripped) isn't in this list is rejected
-   * with 403. Set to `['*']` to disable (NOT recommended for non-loopback servers).
+   * Origin allow-list. Defaults to common loopback origins.
+   * Any request whose `Origin` header isn't in this list is rejected with 403.
+   * Requests with no `Origin` header are allowed for local CLI / desktop clients.
    */
   readonly allowedOrigins?: readonly string[];
   /**
@@ -59,7 +58,7 @@ export interface HttpServerOptions {
   };
 }
 
-const DEFAULT_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://[::1]', 'null'] as const;
+const DEFAULT_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://[::1]'] as const;
 
 interface Session {
   readonly server: McpServer;
@@ -91,8 +90,7 @@ export interface BriskHttpServer {
 export function createBriskHttpServer(options: HttpServerOptions): BriskHttpServer {
   const app = new Hono();
   const path = options.path ?? '/mcp';
-  const allowed = new Set((options.allowedOrigins ?? DEFAULT_ORIGINS).map((o) => o.toLowerCase()));
-  const acceptsAll = allowed.has('*');
+  const allowed = new Set(options.allowedOrigins ?? DEFAULT_ORIGINS);
   const sessionIdGen =
     options.sessionIdGenerator === undefined ? randomUUID : options.sessionIdGenerator;
 
@@ -100,7 +98,7 @@ export function createBriskHttpServer(options: HttpServerOptions): BriskHttpServ
 
   app.all(path, async (c) => {
     const origin = c.req.header('origin');
-    if (!acceptsAll && origin && !originAllowed(origin, allowed)) {
+    if (origin && !allowed.has(origin)) {
       options.logger?.warn(`MCP HTTP: rejected Origin=${origin}`);
       return c.json({ error: 'origin not allowed' }, 403);
     }
@@ -173,16 +171,4 @@ export function createBriskHttpServer(options: HttpServerOptions): BriskHttpServ
       sessions.clear();
     },
   };
-}
-
-function originAllowed(origin: string, allowed: Set<string>): boolean {
-  // Strip the port for the comparison.
-  const lower = origin.toLowerCase();
-  try {
-    const parsed = new URL(lower);
-    const hostNoPort = `${parsed.protocol}//${parsed.hostname.includes(':') ? `[${parsed.hostname}]` : parsed.hostname}`;
-    return allowed.has(lower) || allowed.has(hostNoPort);
-  } catch {
-    return allowed.has(lower);
-  }
 }

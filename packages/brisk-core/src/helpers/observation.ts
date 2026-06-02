@@ -78,6 +78,11 @@ export async function captureScreenshot(
   if (args.clip !== undefined) params.clip = args.clip;
 
   return runCdp(async () => {
+    // Backgrounded headless tabs can stop compositing and leave
+    // Page.captureScreenshot hanging until the CDP request timeout.
+    // Page.bringToFront is the smallest reliable compositor wake-up;
+    // keep it best-effort so the screenshot call remains the authority.
+    await ctx.daemon.callCdp('Page.bringToFront').catch(() => undefined);
     const r = await ctx.daemon.callCdp<{ data: string }>('Page.captureScreenshot', params);
     return {
       bytes: Buffer.from(r.data, 'base64'),

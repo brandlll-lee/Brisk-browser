@@ -78,7 +78,7 @@ export async function boot(options: BootOptions): Promise<Boot> {
   const endpoint = await discoverCdpEndpoint({
     ...(options.cdpWs ? { wsUrl: options.cdpWs } : {}),
     ...(options.cdpUrl ? { httpUrl: options.cdpUrl } : {}),
-    ...(options.cdpPort ? { port: options.cdpPort } : {}),
+    ...(options.cdpPort ? { port: options.cdpPort, profileDirs: [] } : {}),
   });
   cliLogger?.info(`Using CDP endpoint: ${endpoint.webSocketDebuggerUrl}`);
 

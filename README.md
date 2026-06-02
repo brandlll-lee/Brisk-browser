@@ -2,7 +2,7 @@
 
 > An AI-native browser harness — thin CDP layer that any MCP-capable agent can drive.
 
-**Status**: V0.1.0 in active development. Foundation laid 2026-06-02.
+**Status**: V0.1.0 released. Foundation laid 2026-06-02.
 
 ## What is Brisk?
 
@@ -172,7 +172,7 @@ only. They're not redistributed as part of any Brisk binary.
 
 See [`docs/v0.1.0-plan.md`](docs/v0.1.0-plan.md) for the full design.
 Issues and PRs welcome on
-[github.com/yourusername/brisk](https://github.com/yourusername/brisk).
+[github.com/brandlll-lee/Brisk-browser](https://github.com/brandlll-lee/Brisk-browser).
 For now, the surest path to a good PR is reading `docs/architecture.md`
-+ one of the existing helpers (e.g. `packages/brisk-core/src/helpers/interaction/click.ts`)
++ one of the existing helpers (e.g. `packages/brisk-core/src/helpers/input.ts`)
 and matching that style.

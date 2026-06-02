@@ -29,6 +29,8 @@ export interface ServeOptions extends BootOptions {
   readonly port?: number;
   /** HTTP host (default 127.0.0.1). */
   readonly host?: string;
+  /** Allow binding HTTP transport to non-loopback hosts. */
+  readonly allowRemote?: boolean;
   /** Interaction-skills directory exposed as MCP resources. */
   readonly interactionSkillsDir?: string;
   /** Disable interaction-skill resource registration. */
@@ -73,6 +75,7 @@ export async function runServe(options: ServeOptions): Promise<void> {
     boots.shutdown,
     options.port ?? 9100,
     options.host ?? '127.0.0.1',
+    options.allowRemote ?? false,
     interactionSkillsDir,
   );
 }
@@ -125,8 +128,19 @@ async function runHttpMode(
   shutdownBoot: () => Promise<void>,
   port: number,
   host: string,
+  allowRemote: boolean,
   interactionSkillsDir: string | false,
 ): Promise<void> {
+  if (!allowRemote && !isLoopbackHost(host)) {
+    await shutdownBoot();
+    throw new Error(
+      `Refusing to bind HTTP transport to ${host}. Use --allow-remote only on trusted networks.`,
+    );
+  }
+  if (allowRemote && !isLoopbackHost(host)) {
+    logger.warn('Remote HTTP binding enabled. Brisk has no authentication in V0.1.0.');
+  }
+
   logger.info(`Starting MCP HTTP transport on http://${host}:${port}/mcp …`);
   const http = createBriskHttpServer({
     ctx,
@@ -148,6 +162,16 @@ async function runHttpMode(
   await new Promise<void>(() => {
     /* noop: signal handlers resolve via process.exit */
   });
+}
+
+function isLoopbackHost(host: string): boolean {
+  const normalized = host.trim().toLowerCase();
+  return (
+    normalized === '127.0.0.1' ||
+    normalized === 'localhost' ||
+    normalized === '::1' ||
+    normalized === '[::1]'
+  );
 }
 
 // ─── Signals ──────────────────────────────────────────────────────────

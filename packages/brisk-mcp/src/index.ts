@@ -16,7 +16,7 @@ export const BRISK_MCP_SERVER_NAME = 'brisk-browser' as const;
 /** Human-readable MCP server title shown in MCP clients (Claude Desktop / Cursor / Cline). */
 export const BRISK_MCP_SERVER_TITLE = 'Brisk Browser' as const;
 
-export const BRISK_MCP_VERSION = '0.1.0-dev' as const;
+export const BRISK_MCP_VERSION = '0.1.0' as const;
 export const MCP_PROTOCOL_VERSION = '2025-06-18' as const;
 
 // Framework

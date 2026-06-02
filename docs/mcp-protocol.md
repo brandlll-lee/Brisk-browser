@@ -162,11 +162,13 @@ brisk serve --transport http --host 127.0.0.1 --port 9100
 
 - POST `/mcp` — request/response.
 - GET `/mcp` — Server-Sent Events stream (push notifications, future).
-- Defaults to `127.0.0.1` (localhost only). Override with `--host 0.0.0.0`
-  to expose on the network. **Only do this on a trusted network**;
-  Brisk has no auth in V0.1.0.
-- CORS is **not** enabled by default. If a browser-based MCP client
-  needs it, set `BRISK_CORS_ORIGIN=https://your-client.example`.
+- Defaults to `127.0.0.1` (localhost only). Exposing the transport on a
+  non-loopback interface requires both `--host <address>` and
+  `--allow-remote`. **Only do this on a trusted network**; Brisk has no
+  auth in V0.1.0.
+- Browser-origin requests are gated by an exact Origin allow-list. The
+  default list is loopback only (`http://localhost`, `http://127.0.0.1`,
+  `http://[::1]`); non-browser clients without an Origin header are allowed.
 - Multiple clients can connect to the same HTTP server simultaneously.
   They share the same Chrome session.
 

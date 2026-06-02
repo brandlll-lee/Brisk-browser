@@ -118,13 +118,17 @@ async function setupCtx(): Promise<{ ctx: HelperContext; cdp: MockCdp; daemon: D
 describe('observation helpers', () => {
   describe('captureScreenshot', () => {
     it('returns decoded bytes', async () => {
-      const { ctx } = await setupCtx();
+      const { ctx, cdp } = await setupCtx();
       const r = await captureScreenshot(ctx);
       expect(r.ok).toBe(true);
       if (r.ok) {
         expect(r.value.format).toBe('png');
         expect(Array.from(r.value.bytes)).toEqual([0x89, 0x50, 0x4e, 0x47]);
       }
+      expect(cdp.sends.map((s) => s.method)).toEqual([
+        'Page.bringToFront',
+        'Page.captureScreenshot',
+      ]);
     });
 
     it('forwards captureBeyondViewport / optimizeForSpeed / quality', async () => {

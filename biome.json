@@ -13,6 +13,7 @@
       "!**/build",
       "!**/coverage",
       "!**/node_modules",
+      "!.cursor",
       "!references",
       "!agent-workspace/skills.db",
       "!agent-workspace/failures"

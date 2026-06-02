@@ -18,7 +18,7 @@ import { runDaemonStart, runDaemonStatus, runDaemonStop } from './commands/daemo
 import { runDoctor } from './commands/doctor.js';
 import { runServe } from './commands/serve.js';
 
-const VERSION = '0.1.0-dev' as const;
+const VERSION = '0.1.0' as const;
 
 function parsePort(value: string, fallback: number): number {
   const n = Number.parseInt(value, 10);
@@ -38,14 +38,14 @@ async function main(): Promise<void> {
   program
     .command('doctor')
     .description('Quick environment check (Node, CDP, IPC)')
-    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222), 9222)
+    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222))
     .option('--cdp-url <url>', 'Chrome HTTP debug endpoint, e.g. http://localhost:9222')
     .option('--cdp-ws <url>', 'Direct CDP WebSocket URL')
     .option('--instance <name>', 'Daemon instance name', 'default')
     .action(
-      async (opts: { cdpPort: number; cdpUrl?: string; cdpWs?: string; instance: string }) => {
+      async (opts: { cdpPort?: number; cdpUrl?: string; cdpWs?: string; instance: string }) => {
         await runDoctor({
-          cdpPort: opts.cdpPort,
+          ...(opts.cdpPort !== undefined ? { cdpPort: opts.cdpPort } : {}),
           ...(opts.cdpUrl ? { cdpUrl: opts.cdpUrl } : {}),
           ...(opts.cdpWs ? { cdpWs: opts.cdpWs } : {}),
           instance: opts.instance,
@@ -99,7 +99,8 @@ async function main(): Promise<void> {
     .option('-t, --transport <type>', 'Transport: "stdio" or "http"', 'stdio')
     .option('-p, --port <n>', 'HTTP port (when --transport=http)', (v) => parsePort(v, 9100), 9100)
     .option('-H, --host <name>', 'HTTP host', '127.0.0.1')
-    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222), 9222)
+    .option('--allow-remote', 'Allow HTTP transport to bind a non-loopback host')
+    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222))
     .option('--cdp-url <url>', 'Chrome HTTP debug endpoint')
     .option('--cdp-ws <url>', 'Direct CDP WebSocket URL')
     .option('--workspace <path>', 'agent-workspace directory')
@@ -111,26 +112,28 @@ async function main(): Promise<void> {
         transport: string;
         port: number;
         host: string;
-        cdpPort: number;
+        cdpPort?: number;
         cdpUrl?: string;
         cdpWs?: string;
         workspace?: string;
         interactionSkills?: string;
         noInteractionSkills?: boolean;
         noSkills?: boolean;
+        allowRemote?: boolean;
       }) => {
         const transport = opts.transport === 'http' ? 'http' : 'stdio';
         await runServe({
           transport,
           port: opts.port,
           host: opts.host,
-          cdpPort: opts.cdpPort,
+          ...(opts.cdpPort !== undefined ? { cdpPort: opts.cdpPort } : {}),
           ...(opts.cdpUrl ? { cdpUrl: opts.cdpUrl } : {}),
           ...(opts.cdpWs ? { cdpWs: opts.cdpWs } : {}),
           ...(opts.workspace ? { workspaceRoot: opts.workspace } : {}),
           ...(opts.interactionSkills ? { interactionSkillsDir: opts.interactionSkills } : {}),
           ...(opts.noInteractionSkills === true ? { noInteractionSkills: true } : {}),
           ...(opts.noSkills === true ? { noSkills: true } : {}),
+          ...(opts.allowRemote === true ? { allowRemote: true } : {}),
         });
       },
     );
@@ -142,7 +145,7 @@ async function main(): Promise<void> {
     .command('start')
     .description('Start the daemon (blocks until SIGINT)')
     .option('--instance <name>', 'Daemon instance name', 'default')
-    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222), 9222)
+    .option('--cdp-port <n>', 'remote-debugging-port', (v) => parsePort(v, 9222))
     .option('--cdp-url <url>', 'Chrome HTTP debug endpoint')
     .option('--cdp-ws <url>', 'Direct CDP WebSocket URL')
     .option('--workspace <path>', 'agent-workspace directory')
@@ -150,7 +153,7 @@ async function main(): Promise<void> {
     .action(
       async (opts: {
         instance: string;
-        cdpPort: number;
+        cdpPort?: number;
         cdpUrl?: string;
         cdpWs?: string;
         workspace?: string;
@@ -158,7 +161,7 @@ async function main(): Promise<void> {
       }) => {
         await runDaemonStart({
           instance: opts.instance,
-          cdpPort: opts.cdpPort,
+          ...(opts.cdpPort !== undefined ? { cdpPort: opts.cdpPort } : {}),
           ...(opts.cdpUrl ? { cdpUrl: opts.cdpUrl } : {}),
           ...(opts.cdpWs ? { cdpWs: opts.cdpWs } : {}),
           ...(opts.workspace ? { workspaceRoot: opts.workspace } : {}),

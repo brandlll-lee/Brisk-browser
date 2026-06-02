@@ -1,10 +1,21 @@
 {
   "name": "@brisk/cli",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Brisk CLI: brisk doctor / brisk serve / brisk chrome",
-  "private": true,
   "type": "module",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandlll-lee/Brisk-browser.git",
+    "directory": "packages/brisk-cli"
+  },
+  "bugs": {
+    "url": "https://github.com/brandlll-lee/Brisk-browser/issues"
+  },
+  "homepage": "https://github.com/brandlll-lee/Brisk-browser#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "bin": {
     "brisk": "./dist/index.js"

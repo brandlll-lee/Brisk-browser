@@ -47,12 +47,13 @@ async function fetchOK(url: string, timeoutMs: number): Promise<boolean> {
 }
 
 test(`memory: ${ITERATIONS} screenshots stay under ${BUDGET_MB} MB`, async () => {
+  if (!chromeBin) throw new Error('Chrome not found');
   // 1000 screenshots @ ~30-50ms each can take 30-50s; leave some
   // budget for Chrome boot and shutdown.
   test.setTimeout(180_000);
   const profile = mkdtempSync(resolve(tmpdir(), 'brisk-mem-'));
   const chrome = spawn(
-    chromeBin!,
+    chromeBin,
     [
       `--remote-debugging-port=${PORT}`,
       `--user-data-dir=${profile}`,

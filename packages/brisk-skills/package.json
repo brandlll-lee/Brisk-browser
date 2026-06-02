@@ -1,6 +1,6 @@
 {
   "name": "@brisk/skills",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Brisk skill store: SQLite FTS5 index, markdown skill storage, failure log, hot-reloadable helpers",
   "private": true,
   "type": "module",

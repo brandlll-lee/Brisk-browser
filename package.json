@@ -1,10 +1,18 @@
 {
   "name": "brisk",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "AI-native browser harness — thin CDP layer with native MCP and self-learning skills",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brandlll-lee/Brisk-browser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/brandlll-lee/Brisk-browser/issues"
+  },
+  "homepage": "https://github.com/brandlll-lee/Brisk-browser#readme",
   "engines": {
     "node": ">=22.12.0",
     "pnpm": ">=10.0.0"

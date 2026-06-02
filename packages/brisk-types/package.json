@@ -1,6 +1,6 @@
 {
   "name": "@brisk/types",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Shared TypeScript types for Brisk (IPC protocol, tool schemas, CDP wire types)",
   "private": true,
   "type": "module",

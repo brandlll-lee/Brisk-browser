@@ -1,6 +1,6 @@
 {
   "name": "@brisk/core",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Brisk core: CDP client, daemon, browser helpers (the engine — no MCP, no UI)",
   "private": true,
   "type": "module",

@@ -31,11 +31,12 @@ describe('SkillsStore', () => {
     });
     expect(row.title).toBe('Star button trap');
     const fetched = store.getRow('github.com', 'star-button-trap');
-    expect(fetched?.title).toBe('Star button trap');
-    expect(SkillsStore.toSummary(fetched!).tags).toEqual(['button', 'github']);
-    expect(SkillsStore.toSummary(fetched!).uri).toBe(
-      'mcp://brisk/skill/github.com/star-button-trap',
-    );
+    expect(fetched).not.toBeNull();
+    if (!fetched) throw new Error('expected inserted skill row');
+    const summary = SkillsStore.toSummary(fetched);
+    expect(fetched.title).toBe('Star button trap');
+    expect(summary.tags).toEqual(['button', 'github']);
+    expect(summary.uri).toBe('mcp://brisk/skill/github.com/star-button-trap');
   });
 
   it('upserts twice → 1 row, updated_at advances', () => {

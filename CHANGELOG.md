@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-06-03
+
+Brisk 0.1.0 GA hardens the release candidate for a first public
+developer release.
+
+### Changed
+
+- Unified package, CLI, MCP, core, and skills versions to `0.1.0`.
+- Made `@brisk/cli` publishable with npm metadata and public publish config.
+- Tightened Streamable HTTP safety: non-loopback hosts now require
+  `--allow-remote`, and Origin checks use an exact allow-list.
+- Stabilized benchmark E2E by using isolated CDP ports, exact page readiness,
+  and screenshot compositor wake-up before capture.
+- Added GitHub Actions CI across Windows, macOS, and Ubuntu.
+
+### Fixed
+
+- Removed lint failures from non-null assertions and local Cursor config formatting.
+- Fixed explicit `--cdp-port` handling so Brisk no longer discovers a stale
+  user-profile DevTools endpoint before probing the requested port.
+
 ## [0.1.0-rc.1] — 2026-06-02
 
 The first release candidate of Brisk — an AI-native browser harness
@@ -136,5 +157,6 @@ that any MCP-capable agent can drive.
 - All test budgets enforced in test code rather than scripts (so
   CI surfaces regressions automatically).
 
-[Unreleased]: https://github.com/yourusername/brisk/compare/v0.1.0-rc.1...HEAD
-[0.1.0-rc.1]: https://github.com/yourusername/brisk/releases/tag/v0.1.0-rc.1
+[Unreleased]: https://github.com/brandlll-lee/Brisk-browser/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/brandlll-lee/Brisk-browser/releases/tag/v0.1.0
+[0.1.0-rc.1]: https://github.com/brandlll-lee/Brisk-browser/releases/tag/v0.1.0-rc.1

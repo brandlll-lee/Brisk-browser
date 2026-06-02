@@ -1,6 +1,6 @@
 {
   "name": "@brisk/mcp",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Brisk MCP layer: 37 tools, stdio + Streamable HTTP transports, MCP resources & prompts",
   "private": true,
   "type": "module",
