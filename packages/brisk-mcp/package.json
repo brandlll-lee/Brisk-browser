@@ -1,0 +1,48 @@
+{
+  "name": "@brisk/mcp",
+  "version": "0.1.0-dev",
+  "description": "Brisk MCP layer: 37 tools, stdio + Streamable HTTP transports, MCP resources & prompts",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./transports/stdio": {
+      "types": "./dist/transports/stdio.d.ts",
+      "default": "./dist/transports/stdio.js"
+    },
+    "./transports/http": {
+      "types": "./dist/transports/http.d.ts",
+      "default": "./dist/transports/http.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@brisk/types": "workspace:^",
+    "@brisk/core": "workspace:^",
+    "@brisk/skills": "workspace:^",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "zod": "catalog:",
+    "hono": "catalog:",
+    "@hono/node-server": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

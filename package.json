@@ -1,0 +1,39 @@
+{
+  "name": "brisk",
+  "version": "0.1.0-dev",
+  "description": "AI-native browser harness — thin CDP layer with native MCP and self-learning skills",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "build": "pnpm -r --workspace-concurrency=1 run build",
+    "dev": "pnpm -r --parallel run dev",
+    "test": "pnpm -r run test",
+    "test:e2e": "pnpm --filter @brisk/cli run test:e2e",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm -r run typecheck",
+    "clean": "pnpm -r exec rimraf dist && rimraf node_modules/.cache",
+    "brisk": "pnpm --filter @brisk/cli run brisk"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "tsx": "catalog:",
+    "vitest": "catalog:",
+    "rimraf": "^6.0.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "@biomejs/biome"
+    ]
+  }
+}

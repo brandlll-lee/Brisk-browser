@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Coverage & test artifacts
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Agent workspace runtime state (skill content IS tracked; runtime DB/logs are not)
+agent-workspace/skills.db
+agent-workspace/skills.db-journal
+agent-workspace/skills.db-wal
+agent-workspace/skills.db-shm
+agent-workspace/failures/*.jsonl
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.recommended.json
+.cursor/scratchpad/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Runtime / temp
+tmp/
+.tmp/
+.cache/
+
+# IPC sockets (POSIX)
+*.sock
+
+# Brisk-specific runtime
+.brisk/
+brisk-*.pid
+
+# Upstream reference projects (browser-harness / BrowserOS) — read-only learning material,
+# not part of Brisk. Keep them out of the repo to (a) avoid license bleed (AGPL/BSL),
+# (b) keep clone size small, (c) make ownership of code unambiguous.
+references/
+
+# Codegraph local index (per-machine artifact)
+.codegraph/
+
+# Local terminal scratch (Cursor)
+terminals/
+
+# Cursor agent-local skills / projects scratch
+.cursor/projects/

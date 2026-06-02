@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "composite": true
+  },
+  "references": [
+    { "path": "../brisk-types" },
+    { "path": "../brisk-core" },
+    { "path": "../brisk-mcp" },
+    { "path": "../brisk-skills" }
+  ],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

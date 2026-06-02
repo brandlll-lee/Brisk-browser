@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/brisk-types" },
+    { "path": "./packages/brisk-ipc" },
+    { "path": "./packages/brisk-core" },
+    { "path": "./packages/brisk-skills" },
+    { "path": "./packages/brisk-mcp" },
+    { "path": "./packages/brisk-cli" }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@brisk/types",
+  "version": "0.1.0-dev",
+  "description": "Shared TypeScript types for Brisk (IPC protocol, tool schemas, CDP wire types)",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ipc": {
+      "types": "./dist/ipc.d.ts",
+      "default": "./dist/ipc.js"
+    },
+    "./tools": {
+      "types": "./dist/tools.d.ts",
+      "default": "./dist/tools.js"
+    },
+    "./cdp": {
+      "types": "./dist/cdp.d.ts",
+      "default": "./dist/cdp.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

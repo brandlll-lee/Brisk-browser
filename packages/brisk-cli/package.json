@@ -1,0 +1,40 @@
+{
+  "name": "@brisk/cli",
+  "version": "0.1.0-dev",
+  "description": "Brisk CLI: brisk doctor / brisk serve / brisk chrome",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "bin": {
+    "brisk": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "brisk": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@brisk/types": "workspace:^",
+    "@brisk/core": "workspace:^",
+    "@brisk/ipc": "workspace:^",
+    "@brisk/mcp": "workspace:^",
+    "@brisk/skills": "workspace:^",
+    "@hono/node-server": "catalog:",
+    "commander": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "tsx": "catalog:",
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:"
+  }
+}

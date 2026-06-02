@@ -1,0 +1,50 @@
+# Brisk pnpm workspace
+# All version ranges are managed via catalog (pnpm 10.12+).
+# To upgrade a dependency for the whole monorepo, edit this file ONLY.
+
+packages:
+  - "packages/*"
+
+# Tighten supply-chain risk: refuse packages newer than 24h
+# (mitigates dependency-poisoning windows). Comment out if too noisy.
+minimumReleaseAge: 1440
+
+# pnpm 10.12.1+ — auto-add to catalog when running `pnpm add`
+catalogMode: prefer
+
+# pnpm 10.15+ — cleanup unused catalog entries on install
+cleanupUnusedCatalogs: true
+
+catalog:
+  # ─── MCP & Schema ─────────────────────────────────────────────
+  # MCP TS SDK is at 1.11.x as of 2026-05; v2 is pre-alpha (Q3 2026 launch).
+  "@modelcontextprotocol/sdk": ^1.11.0
+  zod: ^4.0.0
+
+  # ─── HTTP ─────────────────────────────────────────────────────
+  # Hono 4.12.16 (2026-04-30) ships JSX-injection + body-limit security fixes;
+  # latest at time of pinning is 4.12.23.
+  hono: ^4.12.16
+  # @hono/node-server is on v2.x (latest 2.0.4 as of 2026-06).
+  "@hono/node-server": ^2.0.4
+
+  # ─── DB ───────────────────────────────────────────────────────
+  # node:sqlite (Node 24 built-in) is NOT compiled with ENABLE_FTS5 as of 2026-06.
+  # better-sqlite3 v12+ ships FTS5 + prebuilt binaries for all 3 OS / 2 archs.
+  better-sqlite3: ^12.0.0
+
+  # ─── CLI ──────────────────────────────────────────────────────
+  commander: ^12.0.0
+
+  # ─── Types ────────────────────────────────────────────────────
+  "@types/node": ^24.0.0
+  # @types/better-sqlite3 is published by DefinitelyTyped with its own
+  # version line (7.x), independent of better-sqlite3's 12.x.
+  "@types/better-sqlite3": ^7.6.13
+
+  # ─── Dev tooling ──────────────────────────────────────────────
+  typescript: ^5.6.0
+  vitest: ^2.0.0
+  "@biomejs/biome": ^2.0.0
+  tsx: ^4.19.0
+  "@playwright/test": ^1.50.0

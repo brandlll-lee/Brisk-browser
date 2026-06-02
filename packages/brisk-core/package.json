@@ -1,0 +1,49 @@
+{
+  "name": "@brisk/core",
+  "version": "0.1.0-dev",
+  "description": "Brisk core: CDP client, daemon, browser helpers (the engine — no MCP, no UI)",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./cdp": {
+      "types": "./dist/cdp/index.d.ts",
+      "default": "./dist/cdp/index.js"
+    },
+    "./daemon": {
+      "types": "./dist/daemon/index.d.ts",
+      "default": "./dist/daemon/index.js"
+    },
+    "./helpers": {
+      "types": "./dist/helpers/index.d.ts",
+      "default": "./dist/helpers/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@brisk/types": "workspace:^",
+    "@brisk/ipc": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "@types/node": "catalog:",
+    "ws": "^8.18.0",
+    "@types/ws": "^8.5.0"
+  }
+}
