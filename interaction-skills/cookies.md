@@ -9,6 +9,10 @@ Cookies live in the browser process, not in the page. Reading them via
 `document.cookie` is limited to non-`HttpOnly` cookies on the current
 origin — useless for auth tokens. Always go through CDP.
 
+In Way 1, Brisk is attached to the user's everyday Chrome profile. That
+means the browser's existing login cookies are already available; prefer
+using that state over exporting or injecting cookies manually.
+
 ## Read
 
 ```text
@@ -22,6 +26,10 @@ cdp {method: "Network.getCookies", params: {urls: ["https://example.com"]}}
 `Network.getAllCookies` returns the entire browser cookie jar — every
 profile, every domain. `Network.getCookies` filters by URLs and respects
 `SameSite` / `Secure` / path / domain rules.
+
+Do not print full cookie values into chat unless the user explicitly
+asks. For normal extraction tasks, only report cookie domain/count
+metadata if you need to confirm whether a session exists.
 
 ## Write
 

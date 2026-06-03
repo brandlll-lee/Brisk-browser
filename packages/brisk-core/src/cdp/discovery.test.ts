@@ -122,6 +122,27 @@ describe('discoverCdpEndpoint', () => {
     );
   });
 
+  it('discovers an existing browser from DevToolsActivePort without an explicit port', async () => {
+    fakeChrome = await startFakeChrome({});
+    tempProfileDir = join(tmpdir(), `brisk-current-browser-${randomBytes(6).toString('hex')}`);
+    await mkdir(tempProfileDir, { recursive: true });
+    await writeFile(
+      join(tempProfileDir, 'DevToolsActivePort'),
+      `${fakeChrome.port}\n/devtools/browser/current-tab-browser\n`,
+      'utf8',
+    );
+
+    const result = await discoverCdpEndpoint({
+      profileDirs: [tempProfileDir],
+      // Use an unreachable probe port to prove the profile path wins.
+      port: 1,
+    });
+
+    expect(result.webSocketDebuggerUrl).toBe(
+      `ws://127.0.0.1:${fakeChrome.port}/devtools/browser/abc-123`,
+    );
+  });
+
   it('falls back to DevToolsActivePort path when /json/version 404s (Chrome 147+)', async () => {
     fakeChrome = await startFakeChrome({ ok: false });
     tempProfileDir = join(tmpdir(), `brisk-prof-${randomBytes(6).toString('hex')}`);

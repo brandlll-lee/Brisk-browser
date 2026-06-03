@@ -13,13 +13,16 @@
  * a human-readable report.
  */
 
+import { execFile } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { access, constants } from 'node:fs/promises';
 import { platform } from 'node:process';
+import { promisify } from 'node:util';
 
 import { discoverCdpEndpoint } from '@brisk/core';
 import { identifyIpcDaemon, ipcPath, pingIpc } from '@brisk/ipc';
 
+import { discoveryOptionsFromResolvedCdp, resolveCdpConfig } from '../cdp-env.js';
 import {
   detectLinuxConfinement,
   detectLinuxDisplayServer,
@@ -36,9 +39,12 @@ export interface DoctorOptions {
 }
 
 const MIN_NODE_MAJOR = 22;
+const INSPECT_URL = 'chrome://inspect/#remote-debugging';
+const execFileAsync = promisify(execFile);
 
 export async function runDoctor(options: DoctorOptions): Promise<void> {
   let healthy = true;
+  const cdpConfig = resolveCdpConfig(options);
   println('Brisk environment check');
   println('========================');
 
@@ -112,15 +118,14 @@ export async function runDoctor(options: DoctorOptions): Promise<void> {
   // ─── CDP discovery ────────────────────────────────────
   try {
     const endpoint = await discoverCdpEndpoint({
-      ...(options.cdpWs ? { wsUrl: options.cdpWs } : {}),
-      ...(options.cdpUrl ? { httpUrl: options.cdpUrl } : {}),
-      ...(options.cdpPort ? { port: options.cdpPort, profileDirs: [] } : {}),
+      ...discoveryOptionsFromResolvedCdp(cdpConfig),
     });
-    println(`  cdp        ✓ ${endpoint.webSocketDebuggerUrl}`);
+    println(
+      `  cdp        ✓ ${endpoint.webSocketDebuggerUrl} (${describeCdpSource(cdpConfig.source)})`,
+    );
   } catch (cause) {
     println(`  cdp        ✗ ${(cause as Error).message}`);
-    println('             → start Chrome with --remote-debugging-port=9222');
-    println('             → or run `brisk chrome --port 9222`');
+    await printCdpRecovery(options, cdpConfig.source);
     healthy = false;
   }
 
@@ -149,4 +154,91 @@ export async function runDoctor(options: DoctorOptions): Promise<void> {
   println('========================');
   println(healthy ? 'All required checks passed.' : 'One or more checks failed.');
   if (!healthy) process.exitCode = 1;
+}
+
+function describeCdpSource(source: ReturnType<typeof resolveCdpConfig>['source']): string {
+  switch (source) {
+    case 'cli-ws':
+      return '--cdp-ws';
+    case 'cli-url':
+      return '--cdp-url';
+    case 'cli-port':
+      return '--cdp-port';
+    case 'env-ws':
+      return 'BRISK_CDP_WS';
+    case 'env-url':
+      return 'BRISK_CDP_URL';
+    case 'auto':
+      return 'auto';
+  }
+}
+
+async function printCdpRecovery(
+  options: DoctorOptions,
+  source: ReturnType<typeof resolveCdpConfig>['source'],
+): Promise<void> {
+  const chromeRunning = await isChromeRunning();
+  const explicit = source !== 'auto';
+  if (chromeRunning && !explicit) {
+    println(`             → Way 1: open ${INSPECT_URL}`);
+    println('             → tick "Allow remote debugging for this browser instance"');
+    println('             → click Allow if Chrome shows a remote-debugging popup');
+    if (await openChromeInspect()) {
+      println('             → opened the remote-debugging page for you');
+    }
+    return;
+  }
+  if (!explicit) {
+    println(`             → Way 1: start your normal Chrome, then open ${INSPECT_URL}`);
+    println('             → or run `brisk chrome --port 9222` for Way 2');
+    return;
+  }
+  if (options.cdpPort !== undefined) {
+    println(
+      `             → confirm Chrome is listening on --remote-debugging-port=${options.cdpPort}`,
+    );
+  } else {
+    println('             → confirm the configured CDP endpoint is reachable');
+  }
+  println('             → Way 2 fallback: `brisk chrome --port 9222`');
+}
+
+async function isChromeRunning(): Promise<boolean> {
+  try {
+    if (platform === 'win32') {
+      const { stdout } = await execFileAsync('tasklist', [], { timeout: 5000 });
+      return /chrome\.exe|msedge\.exe|brave\.exe|chromium\.exe/i.test(stdout);
+    }
+    const { stdout } = await execFileAsync('ps', ['-A', '-o', 'comm='], { timeout: 5000 });
+    return /Google Chrome|chrome|chromium|Microsoft Edge|msedge|brave/i.test(stdout);
+  } catch {
+    return false;
+  }
+}
+
+async function openChromeInspect(): Promise<boolean> {
+  try {
+    if (platform === 'darwin') {
+      await execFileAsync(
+        'osascript',
+        [
+          '-e',
+          'tell application "Google Chrome" to activate',
+          '-e',
+          `tell application "Google Chrome" to open location "${INSPECT_URL}"`,
+        ],
+        { timeout: 5000 },
+      );
+      return true;
+    }
+    if (platform === 'win32') {
+      await execFileAsync('cmd.exe', ['/c', 'start', '', INSPECT_URL], { timeout: 5000 });
+      return true;
+    }
+    const opener = process.env.BROWSER ? process.env.BROWSER : 'xdg-open';
+    await execFileAsync(opener, [INSPECT_URL], { timeout: 5000 });
+    return true;
+  } catch {
+    return false;
+  }
 }

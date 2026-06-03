@@ -10,9 +10,9 @@ Compare with `agent-workspace/domain-skills/` which is **agent-owned** and
 **site-specific**. Interaction skills are tool-agnostic; domain skills
 encode "GitHub's star button is a controlled React input, use form.submit".
 
-## Files in W1
+## Files
 
-The 17 interaction skills will be filled in progressively:
+The interaction skills are:
 
 | File | Owner | Topic |
 |---|---|---|

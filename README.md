@@ -32,15 +32,21 @@ Three things make Brisk different:
 ```bash
 npm install -g @brisk/cli
 
-brisk doctor                              # check the environment
-brisk chrome --port 9222                  # spawn a Chrome for Brisk (Way 2)
-                                          # — leave this terminal running
-                                          
-# In another terminal:
-brisk serve --transport stdio             # MCP server on stdin/stdout
+brisk doctor                              # checks Node, Chrome, and CDP
+                                          # If Chrome is open but CDP is off,
+                                          # doctor opens chrome://inspect/#remote-debugging.
+
+brisk serve --transport stdio             # attaches to your current Chrome (Way 1)
 # OR
-brisk serve --transport http --port 9100  # MCP server on http://127.0.0.1:9100/mcp
+brisk serve --transport http --port 9100  # http://127.0.0.1:9100/mcp
 ```
+
+Way 1 is the default interactive path: Brisk connects to the Chrome /
+Edge / Brave / Chromium profile you already use, so the agent can work
+with your logged-in sessions, cookies, extensions, and open tabs.
+
+Use `brisk chrome --port 9222` only when you want Way 2: an isolated
+Chrome profile for unattended, test, or headless work.
 
 Then point your MCP client at Brisk. See
 [`docs/install.md`](docs/install.md) for Claude Desktop / Cursor /
@@ -49,9 +55,10 @@ Cline / Continue / Claude Code setup.
 ## Demo flow
 
 ```bash
-# 1. Start Brisk attached to your local Chrome
-brisk chrome --port 9222 --headless &
-brisk serve --transport stdio &
+# 1. Open your normal Chrome and enable Way 1 once:
+#    chrome://inspect/#remote-debugging
+#    tick "Allow remote debugging for this browser instance"
+brisk serve --transport stdio
 
 # 2. From an MCP client, ask the agent:
 #   "Open github.com/browser-use/browser-harness and read the README."
@@ -74,7 +81,8 @@ brisk serve --transport stdio &
 | Skill self-learning (write_skill / record_failure / list_skills) | ✓ |
 | Cross-platform (Windows + macOS + Linux) | ✓ |
 | `brisk doctor` (env check) | ✓ |
-| `brisk chrome` (cross-platform launcher) | ✓ |
+| Way 1 current-browser attach by default | ✓ |
+| `brisk chrome` Way 2 isolated-browser launcher | ✓ |
 | `brisk daemon start|stop|status` (IPC daemon) | ✓ |
 | E2E tests against real Chrome | ✓ |
 

@@ -17,6 +17,7 @@ import {
 } from './helpers.js';
 
 const PORT = 9434;
+const AUTO_DISCOVERY_PORT = 9437;
 const chromeBin = findChrome();
 
 test.skip(!chromeBin, 'no Chrome installed');
@@ -81,5 +82,49 @@ test.describe('brisk serve --transport stdio', () => {
     expect(result.error).toBeUndefined();
     const text = JSON.stringify(result.result);
     expect(text).toContain('connected');
+  });
+
+  test('auto-discovers an existing browser via DevToolsActivePort and attaches its current tab', async () => {
+    const autoChrome = await spawnChrome(AUTO_DISCOVERY_PORT);
+    let autoBrisk: BriskServeHandle | undefined;
+    try {
+      autoBrisk = spawnBrisk(['--transport', 'stdio', '--no-skills'], {
+        BRISK_PROFILE_DIRS: autoChrome.profile,
+      });
+      const client = makeStdioClient(autoBrisk.proc);
+
+      await waitFor(() => autoBrisk?.proc.exitCode === null, 3_000);
+
+      const init = await client.call('initialize', {
+        protocolVersion: '2025-06-18',
+        capabilities: {},
+        clientInfo: { name: 'brisk-e2e', version: '0.1.0' },
+      });
+      expect(init.error).toBeUndefined();
+      client.notify('notifications/initialized');
+
+      const newTab = await client.call('tools/call', {
+        name: 'new_tab',
+        arguments: { url: 'https://example.com/' },
+      });
+      expect(newTab.error).toBeUndefined();
+      const loaded = await client.call('tools/call', {
+        name: 'wait_for_load',
+        arguments: { timeoutSeconds: 15 },
+      });
+      expect(loaded.error).toBeUndefined();
+
+      await waitFor(async () => {
+        const current = await client.call('tools/call', {
+          name: 'current_tab',
+          arguments: {},
+        });
+        expect(current.error).toBeUndefined();
+        return JSON.stringify(current.result).includes('example.com');
+      }, 10_000);
+    } finally {
+      await autoBrisk?.kill();
+      await autoChrome.kill();
+    }
   });
 });

@@ -22,3 +22,10 @@ Three things live here:
 ## Privacy
 
 These files may contain hints about what sites you visit and what tasks you run. Treat the workspace like your `.bash_history` — review before sharing.
+
+## Included starter skills
+
+- `domain-skills/amazon/product-extraction.md` — opens Amazon pages in a
+  real logged-in browser tab, waits for dynamic content, then extracts
+  title, price, rating, review count, availability, brand, ASIN, and
+  bullet points with `js`.

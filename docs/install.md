@@ -59,6 +59,16 @@ All required checks passed.
 
 `daemon - not running` is fine — `brisk serve` starts it on demand.
 
+CDP endpoint precedence is:
+
+1. CLI `--cdp-ws`
+2. CLI `--cdp-url`
+3. CLI `--cdp-port`
+4. `BRISK_CDP_WS`
+5. `BRISK_CDP_URL`
+6. `DevToolsActivePort` files from running browser profiles
+7. loopback probes on 9222 and 9223
+
 ## Way 1 — Your everyday Chrome (recommended for interactive use)
 
 Use this when you want the agent to share your cookies / sessions /
@@ -84,7 +94,10 @@ brisk serve              # stdio MCP server (for Claude Desktop / Cursor stdio)
 ```
 
 That's it. Brisk inherits your Chrome's profile, including every
-logged-in session.
+logged-in session, cookies, extensions, and currently open real tabs.
+If Chrome is already running but CDP is not enabled, `brisk doctor`
+prints the Way 1 steps and tries to open
+`chrome://inspect/#remote-debugging` for you.
 
 ### Way 1 limitations
 
@@ -278,13 +291,20 @@ or later) works.
 
 ### `brisk doctor` reports `cdp ✗`
 
-Chrome isn't running with remote debugging.
+If your normal Chrome is already open, enable Way 1:
 
 ```bash
-brisk chrome --port 9222   # spawn one for Brisk
+chrome://inspect/#remote-debugging
 ```
 
-Or enable Way 1 (chrome://inspect/#remote-debugging).
+Tick **"Allow remote debugging for this browser instance"**, then click
+Allow if Chrome shows a popup. Re-run `brisk doctor`.
+
+For unattended or headless work, use Way 2 instead:
+
+```bash
+brisk chrome --port 9222
+```
 
 ### MCP client says "no tools"
 

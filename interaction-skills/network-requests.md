@@ -80,6 +80,19 @@ For "scrape all JSON API responses on a page" without intercept:
 
 This is read-only and doesn't slow the page.
 
+For product pages such as Amazon, prefer DOM extraction first:
+
+```text
+1. new_tab "https://www.amazon.com/dp/<ASIN>"
+2. wait_for_load
+3. wait 2
+4. js extract title / price / rating from stable selectors
+```
+
+Use network body capture only when the page visibly loads data from a
+JSON API that is easier to parse than the rendered DOM. If a CAPTCHA or
+anti-bot page appears, stop and notify the user; do not try to bypass it.
+
 ## CORS / preflight
 
 OPTIONS preflight requests show up as `requestWillBeSent` with

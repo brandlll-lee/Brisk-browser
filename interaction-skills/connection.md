@@ -30,11 +30,19 @@ omnibox popup).
 ## Startup sequence
 
 ```bash
-# 1. Start Chrome with remote debugging enabled
-chrome --remote-debugging-port=9222 --user-data-dir=$BRISK_PROFILE
+# Way 1: use the user's current browser (recommended for interactive work)
+# Open this in Chrome once and tick the remote-debugging checkbox:
+chrome://inspect/#remote-debugging
 
-# 2. Start the Brisk daemon (or let brisk serve do it lazily)
-brisk daemon start
+# Then start the MCP server. It attaches to the existing browser.
+brisk serve --transport stdio
+```
+
+Way 2 is the fallback for unattended, CI, or headless work:
+
+```bash
+brisk chrome --port 9222
+brisk serve --transport stdio --cdp-port 9222
 ```
 
 Inside an agent session:
@@ -48,17 +56,19 @@ Inside an agent session:
 
 ## Discovery cascade
 
-The daemon resolves the CDP WebSocket URL in this order:
+CLI flags are most explicit. Without CLI flags, Brisk resolves the CDP
+WebSocket URL in this order:
 
 1. `BRISK_CDP_WS` environment variable (full `ws://…/devtools/browser/<id>` URL).
 2. `BRISK_CDP_URL` environment variable (HTTP base URL — `/json/version` is queried).
-3. `--remote-debugging-port` discovered via the 27 standard Chrome /
-   Edge / Brave / Vivaldi profile paths' `DevToolsActivePort` file.
-4. Probe `http://localhost:{9222,9223,9000}` for a JSON Version response.
+3. `DevToolsActivePort` files from standard Chrome / Edge / Brave profile paths,
+   plus any paths in `BRISK_PROFILE_DIRS`.
+4. Probe loopback ports `9222` and `9223` for a JSON Version response.
 
 If none succeed, the daemon emits `CDP_DISCOVERY_FAILED` — there's no
-running browser, or the port is firewalled. Tell the user to start
-Chrome with `--remote-debugging-port=9222`.
+running browser, or remote debugging is not enabled. Run `brisk doctor`;
+if Chrome is already running, it points the user to
+`chrome://inspect/#remote-debugging` and tries to open it.
 
 ## Restarting after Chrome reload
 

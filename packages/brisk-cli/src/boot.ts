@@ -22,6 +22,7 @@ import {
 } from '@brisk/core';
 import { SkillsManager } from '@brisk/skills';
 
+import { discoveryOptionsFromResolvedCdp, resolveCdpConfig } from './cdp-env.js';
 import type { CliLogger } from './logger.js';
 
 export interface BootOptions {
@@ -73,13 +74,10 @@ function bridge(cli: CliLogger | undefined): BackendLogger {
 export async function boot(options: BootOptions): Promise<Boot> {
   const cliLogger = options.logger;
   const backendLogger = bridge(cliLogger);
+  const cdpConfig = resolveCdpConfig(options);
 
   cliLogger?.info('Discovering CDP endpoint…');
-  const endpoint = await discoverCdpEndpoint({
-    ...(options.cdpWs ? { wsUrl: options.cdpWs } : {}),
-    ...(options.cdpUrl ? { httpUrl: options.cdpUrl } : {}),
-    ...(options.cdpPort ? { port: options.cdpPort, profileDirs: [] } : {}),
-  });
+  const endpoint = await discoverCdpEndpoint(discoveryOptionsFromResolvedCdp(cdpConfig));
   cliLogger?.info(`Using CDP endpoint: ${endpoint.webSocketDebuggerUrl}`);
 
   const cdp = new CdpBackendImpl({

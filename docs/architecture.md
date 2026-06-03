@@ -59,7 +59,7 @@ process. This document explains what each does and how they talk.
 ┌─────────────────────────────────────────────────────────────────────┐
 │                                                                     │
 │   Chrome / Chromium / Edge / Brave                                  │
-│   (running with --remote-debugging-port)                            │
+│   (Way 1 current profile, or Way 2 isolated remote-debugging profile)│
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -179,10 +179,11 @@ you ran.
 
 ```
 1. CLI parses argv, calls runServe(opts)
-2. boot() discovers CDP endpoint (BRISK_CDP_WS > BRISK_CDP_URL >
-   port scan > DevToolsActivePort sweep)
+2. boot() discovers CDP endpoint. CLI flags are most explicit; without
+   them the env/profile cascade is:
+   BRISK_CDP_WS > BRISK_CDP_URL > DevToolsActivePort sweep > 9222/9223
 3. CdpBackend.connect() opens the WebSocket
-4. Daemon.init() picks a target (first non-blank tab), runs
+4. Daemon.start() picks a target (first real non-internal tab), runs
    Target.attachToTarget(flatten:true) → cached sessionId
 5. SkillsManager.open() initialises agent-workspace/skills.db
 6. createBriskMcpServer({ helpers, daemon, skills, interactionSkillsDir })

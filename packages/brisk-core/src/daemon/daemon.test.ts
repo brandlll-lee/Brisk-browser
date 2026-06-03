@@ -128,6 +128,23 @@ describe('Daemon', () => {
       expect(attachCall?.params).toMatchObject({ targetId: 'T1', flatten: true });
     });
 
+    it('attaches an existing user tab without creating a new tab', async () => {
+      const cdp = new MockCdp();
+      cdp.handler = defaultHandler([
+        { targetId: 'T-user', type: 'page', url: 'https://amazon.com/dp/B08Z6X4NK3' },
+      ]);
+      const d = new Daemon(cdp);
+
+      await d.start();
+
+      expect(d.getSession()).toMatchObject({ sessionId: 'S1', targetId: 'T-user' });
+      expect(cdp.sends.some((s) => s.method === 'Target.createTarget')).toBe(false);
+      expect(cdp.sends.find((s) => s.method === 'Target.attachToTarget')?.params).toMatchObject({
+        targetId: 'T-user',
+        flatten: true,
+      });
+    });
+
     it('creates an about:blank page when no real pages exist', async () => {
       const cdp = new MockCdp();
       cdp.handler = defaultHandler([{ targetId: 'TC1', type: 'page', url: 'chrome://newtab' }]);
