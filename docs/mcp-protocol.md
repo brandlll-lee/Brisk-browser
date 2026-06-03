@@ -38,13 +38,11 @@ No `prompts`, `roots`, `sampling`, or `logging` capabilities in V0.1.0.
 | Category | Count | Examples |
 |---|---|---|
 | **Observation** (6) | observe page state | `page_info`, `capture_screenshot`, `dom`, `get_console_logs` |
-| **Interaction** (8) | drive input | `click_at_xy`, `type_text`, `fill_input`, `press_key`, `scroll`, `hover_at_xy`, `select_option`, `dispatch_key` |
+| **Interaction** (9) | drive input | `click_at_xy`, `type_text`, `fill_input`, `press_key`, `scroll`, `hover_at_xy`, `select_option`, `dispatch_key`, `upload_file` |
 | **Navigation** (8) | move between pages / tabs | `goto_url`, `list_tabs`, `new_tab`, `switch_tab`, `close_tab`, `current_tab`, `ensure_real_tab`, `iframe_target` |
-| **Waits** (3) | pace the agent | `wait`, `wait_for_load`, `wait_for_element` |
+| **Waits** (4) | pace the agent | `wait`, `wait_for_load`, `wait_for_element`, `wait_for_network_idle` |
 | **Network** (2) | bypass / probe | `http_get`, `cdp` |
 | **Admin** (3) | daemon health | `connection_status`, `restart_daemon`, `pending_dialog` |
-| **Files** (1) | upload | `upload_file` |
-| **Events** (1) | inspect | `drain_events` |
 | **Skills** (5) | self-learning | `list_skills`, `read_skill`, `write_skill`, `record_failure`, `attach_helper` |
 
 Full schemas live in `packages/brisk-mcp/src/tools/`. The MCP server's

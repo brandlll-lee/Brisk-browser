@@ -1,8 +1,19 @@
 # Installing and connecting Brisk
 
-Brisk is an MCP server that drives a real Chrome browser over CDP. Three
-ways to get it running: **Way 1** (your everyday Chrome), **Way 2**
-(isolated Chrome you let Brisk launch), and **Cloud** (V0.1.1).
+Brisk is the bridge between an AI agent and a real browser.
+
+Once it is running, your MCP client can ask Brisk to open pages, click,
+type, take screenshots, read page content, and extract data. The
+recommended path is simple: let Brisk connect to the Chrome profile you
+already use.
+
+There are two working ways to run V0.1.0:
+
+- **Way 1**: your everyday Chrome. Best for real interactive work.
+- **Way 2**: a clean Chrome that Brisk launches. Best for tests,
+  unattended jobs, and headless runs.
+
+Cloud browser support is planned for V0.1.1.
 
 ## Prerequisites
 
@@ -57,7 +68,7 @@ Brisk environment check
 All required checks passed.
 ```
 
-`daemon - not running` is fine — `brisk serve` starts it on demand.
+`daemon - not running` is fine. `brisk serve` starts it on demand.
 
 CDP endpoint precedence is:
 
@@ -69,7 +80,7 @@ CDP endpoint precedence is:
 6. `DevToolsActivePort` files from running browser profiles
 7. loopback probes on 9222 and 9223
 
-## Way 1 — Your everyday Chrome (recommended for interactive use)
+## Way 1 — Your everyday Chrome (recommended)
 
 Use this when you want the agent to share your cookies / sessions /
 extensions.
@@ -93,8 +104,12 @@ brisk doctor             # confirm CDP discoverable
 brisk serve              # stdio MCP server (for Claude Desktop / Cursor stdio)
 ```
 
-That's it. Brisk inherits your Chrome's profile, including every
-logged-in session, cookies, extensions, and currently open real tabs.
+That's it.
+
+Brisk now works with the browser you already use. If you are logged in,
+the agent can work inside that same session. If you already have tabs
+open, Brisk can see the real page tabs and attach to them.
+
 If Chrome is already running but CDP is not enabled, `brisk doctor`
 prints the Way 1 steps and tries to open
 `chrome://inspect/#remote-debugging` for you.
@@ -106,10 +121,12 @@ prints the Way 1 steps and tries to open
 - Some enterprise Chrome policies disable `chrome://inspect`.
 - Closing all Chrome windows kills Brisk's connection.
 
-## Way 2 — Isolated Chrome (recommended for unattended / dev work)
+## Way 2 — Isolated Chrome
 
-Use this when you want a hermetic Chrome instance Brisk owns, no popups
-and a fresh profile each time.
+Use this when you want a separate Chrome instance that Brisk owns.
+
+This is better for tests, CI, scripts, and anything that should not touch
+your normal browser profile.
 
 ### Auto-launch
 

@@ -1,7 +1,31 @@
 # Brisk Architecture
 
+Brisk has one simple job:
+
+connect an AI client to a real browser, then give that AI safe, small
+tools for looking at pages and acting on them.
+
+The AI is the brain. Chrome is the browser. Brisk is the bridge between
+them.
+
 Brisk V0.1.0 is six TypeScript packages stitched together in a single
-process. This document explains what each does and how they talk.
+process. This document explains what each piece does and how they talk.
+
+## Big Picture
+
+When a user runs `brisk serve`, four things happen:
+
+1. Brisk finds a browser it can talk to.
+2. Brisk attaches to a real page tab.
+3. Brisk starts an MCP server.
+4. The AI client calls Brisk tools like `new_tab`, `click_at_xy`, `js`,
+   and `capture_screenshot`.
+
+That is the whole loop.
+
+```text
+AI client -> Brisk MCP tools -> Chrome DevTools -> real browser page
+```
 
 ## Process topology
 
@@ -117,13 +141,12 @@ The heart. Three subsystems:
 
 3. **`helpers/`** — Pure functions taking `HelperContext`. One function
    per MCP tool. These are the units of automation:
-   - `observation/` — `pageInfo`, `captureScreenshot`, `dom`, `getConsoleLogs`, `drainEvents`, `connectionStatus`
-   - `interaction/` — `clickAtXy`, `typeText`, `fillInput`, `pressKey`, `scroll`, `hoverAtXy`, `selectOption`, `dispatchKey`
+   - `observation/` — `pageInfo`, `captureScreenshot`, `js`, `dom`, `getConsoleLogs`, `drainEvents`
+   - `input/` — `clickAtXy`, `typeText`, `fillInput`, `pressKey`, `scroll`, `hoverAtXy`, `selectOption`, `dispatchKey`, `uploadFile`
    - `navigation/` — `gotoUrl`, `listTabs`, `newTab`, `switchTab`, `closeTab`, `currentTab`, `ensureRealTab`, `iframeTarget`
-   - `waits/` — `wait`, `waitForLoad`, `waitForElement`
+   - `waits/` — `wait`, `waitForLoad`, `waitForElement`, `waitForNetworkIdle`
    - `network/` — `httpGet`, `cdpRaw`
    - `admin/` — `connectionStatus`, `restartDaemon`, `pendingDialog`
-   - `files/` — `uploadFile`
 
 Helpers are intentionally thin. No retry loops, no element-hunting, no
 DOM tree flattening. Just CDP calls with type-safe wrappers.
@@ -171,7 +194,7 @@ The user-facing `brisk` binary. Commands:
 - `brisk serve` — start the MCP server (stdio or HTTP)
 - `brisk daemon start|stop|status` — manage the IPC daemon
 
-`commands/boot.ts` is shared bootstrap: discover CDP, connect, attach,
+`boot.ts` is shared bootstrap: discover CDP, connect, attach,
 init skills, wire helpers — the same flow regardless of which command
 you ran.
 
